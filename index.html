@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>To'lovlar ro'yxati</title>
+    <style>
+        :root {
+            --bg: #f3f6f4;
+            --card: #fff;
+            --ink: #16231d;
+            --mute: #5d6f66;
+            --line: #d8e1dc;
+            --accent: #0f6b4f;
+            --accent-ink: #fff;
+            --usd: #1d4ed8;
+            --danger: #b3261e;
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px)
+        }
+
+        @media (prefers-color-scheme:dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #0f1713;
+                --card: #17221c;
+                --ink: #e8f1ec;
+                --mute: #93a79c;
+                --line: #2a3a32;
+                --accent: #4fc59a;
+                --accent-ink: #06221a;
+                --usd: #8fb4ff;
+                --danger: #ff8a80
+            }
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #0f1713;
+            --card: #17221c;
+            --ink: #e8f1ec;
+            --mute: #93a79c;
+            --line: #2a3a32;
+            --accent: #4fc59a;
+            --accent-ink: #06221a;
+            --usd: #8fb4ff;
+            --danger: #ff8a80
+        }
+
+        html {
+            scroll-padding-top: env(safe-area-inset-top, 0px)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+            line-height: 1.4
+        }
+
+        main {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 20px 16px 40px
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 8px 0 16px
+        }
+
+        .totals {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px
+        }
+
+        .t {
+            border-radius: 14px;
+            padding: 14px 16px;
+            background: var(--accent);
+            color: var(--accent-ink)
+        }
+
+        .t.usd {
+            background: var(--card);
+            color: var(--ink);
+            border: 2px solid var(--usd)
+        }
+
+        .t small {
+            display: block;
+            opacity: .85
+        }
+
+        .t b {
+            font-size: 1.4rem;
+            word-break: break-all
+        }
+
+        .add {
+            display: grid;
+            grid-template-columns: 1fr 130px 92px;
+            gap: 8px;
+            margin-bottom: 8px
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--card);
+            color: var(--ink);
+            font-size: 1rem
+        }
+
+        input:focus-visible,
+        select:focus-visible,
+        button:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 1px
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: 0;
+            border-radius: 10px;
+            background: var(--accent);
+            color: var(--accent-ink);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer
+        }
+
+        .err {
+            color: var(--danger);
+            min-height: 1.2em;
+            margin: 6px 0 10px;
+            font-size: .9rem
+        }
+
+        .status {
+            color: var(--mute);
+            font-size: .8rem;
+            margin: 0 0 10px
+        }
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            overflow: hidden
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        li:last-child {
+            border-bottom: 0
+        }
+
+        .n {
+            flex: 1;
+            word-break: break-word
+        }
+
+        .s {
+            font-weight: 700;
+            white-space: nowrap
+        }
+
+        .s.usd {
+            color: var(--usd)
+        }
+
+        .x {
+            border: 0;
+            background: none;
+            color: var(--mute);
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 2px 8px
+        }
+
+        .x:hover {
+            color: var(--danger)
+        }
+
+        .empty {
+            padding: 22px;
+            text-align: center;
+            color: var(--mute)
+        }
+
+        @media (max-width:460px) {
+            .add {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .add #name {
+                grid-column: 1/3
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>To'lovlar ro'yxati</h1>
+        <div class="totals">
+            <div class="t"><small>Jami so'm</small><b id="totUzs">0</b></div>
+            <div class="t usd"><small>Jami dollar</small><b id="totUsd">0</b></div>
+        </div>
+        <div class="add">
+            <input id="name" type="text" placeholder="Ism" autocomplete="off" maxlength="60">
+            <input id="sum" type="text" inputmode="decimal" placeholder="Summa" autocomplete="off">
+            <select id="cur" aria-label="Valyuta">
+                <option value="UZS">so'm</option>
+                <option value="USD">$ dollar</option>
+            </select>
+        </div>
+        <button class="btn" id="addBtn" type="button">Qo'shish</button>
+        <div class="err" id="err" role="alert"></div>
+        <p class="status" id="status"></p>
+        <ul id="list"></ul>
+    </main>
+    <script>
+        var OLD = "tolovlar_v1", KEY = "tolovlar_v2";
+        var items = [], col = null, useDb = false;
+
+        function fmt(n, usd) {
+            var s = usd ? n.toFixed(2).replace(/\.00$/, "") : String(Math.round(n));
+            var p = s.split("."); p[0] = p[0].replace(/\B(?=(\d{3})+(?!\d))/g, " "); return p.join(".");
+        }
+        function render() {
+            var ul = document.getElementById("list"), u = 0, d = 0; ul.innerHTML = "";
+            if (!items.length) { ul.innerHTML = '<li class="empty">Hali hech kim qo\'shilmagan. Yuqoriga ism va summani kiriting.</li>'; }
+            items.forEach(function (it) {
+                var usd = it.cur === "USD";
+                if (usd) d += it.amount; else u += it.amount;
+                var li = document.createElement("li");
+                var n = document.createElement("span"); n.className = "n"; n.textContent = it.name;
+                var s = document.createElement("span"); s.className = "s" + (usd ? " usd" : "");
+                s.textContent = usd ? "$" + fmt(it.amount, true) : fmt(it.amount) + " so'm";
+                var x = document.createElement("button"); x.className = "x"; x.type = "button"; x.textContent = "×";
+                x.setAttribute("aria-label", "O'chirish: " + it.name);
+                x.onclick = function () { remove(it); };
+                li.appendChild(n); li.appendChild(s); li.appendChild(x); ul.appendChild(li);
+            });
+            document.getElementById("totUzs").textContent = fmt(u) + " so'm";
+            document.getElementById("totUsd").textContent = "$" + fmt(d, true);
+        }
+        function saveLocal() { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch (e) { } }
+        function loadLocal() {
+            try {
+                var r = localStorage.getItem(KEY); if (r) return JSON.parse(r) || [];
+                var o = localStorage.getItem(OLD); if (o) return (JSON.parse(o) || []).map(function (x, i) { return { id: "o" + i, name: x.name, amount: x.sum, cur: "UZS", ts: i }; });
+            } catch (e) { }
+            return [];
+        }
+        function remove(it) {
+            if (useDb) { col.doc(it.id).delete().catch(function () { setStatus("O'chirib bo'lmadi. Qayta urinib ko'ring."); }); }
+            else { items = items.filter(function (x) { return x.id !== it.id; }); saveLocal(); render(); }
+        }
+        function setStatus(t) { document.getElementById("status").textContent = t || ""; }
+        function add() {
+            var name = document.getElementById("name"), sum = document.getElementById("sum"), err = document.getElementById("err");
+            var cur = document.getElementById("cur").value;
+            var nm = name.value.trim(), v = parseFloat(sum.value.replace(/\s/g, "").replace(",", "."));
+            if (!nm) { err.textContent = "Ismni kiriting."; name.focus(); return; }
+            if (!v || v <= 0) { err.textContent = "Summani raqam bilan kiriting."; sum.focus(); return; }
+            err.textContent = "";
+            var rec = { name: nm, amount: cur === "USD" ? Math.round(v * 100) / 100 : Math.round(v), cur: cur, ts: Date.now() };
+            if (useDb) {
+                col.add(rec).catch(function () { setStatus("Saqlab bo'lmadi. Qayta urinib ko'ring."); });
+            } else {
+                rec.id = "l" + rec.ts; items.push(rec); saveLocal(); render();
+            }
+            name.value = ""; sum.value = ""; name.focus();
+        }
+        document.getElementById("addBtn").onclick = add;
+        document.getElementById("sum").addEventListener("input", function () { this.value = this.value.replace(/[^\d.,\s]/g, ""); });
+        ["name", "sum"].forEach(function (id) { document.getElementById(id).addEventListener("keydown", function (e) { if (e.key === "Enter") add(); }); });
+
+        items = loadLocal(); render();
+        (async function () {
+            try {
+                if (!window.claude) throw 0;
+                var db = await claude.use("db");
+                if (!db) throw 0;
+                col = db.collection("payments");
+                useDb = true;
+                var legacy = items.slice();
+                col.orderBy("ts", "asc").onSnapshot(function (snap) {
+                    items = snap.docs.map(function (d) { var x = d.data() || {}; x.id = d.id; return x; });
+                    render(); saveLocal();
+                    setStatus("Ma'lumotlar saqlanadi, sahifani yangilasangiz ham o'chmaydi.");
+                }, function () { useDb = false; setStatus("Faqat shu brauzerda saqlanyapti."); });
+                // eski ro'yxat (faqat shu brauzerda bo'lgan) bir marta ko'chiriladi
+                try {
+                    if (legacy.length && !localStorage.getItem("tolovlar_migrated")) {
+                        localStorage.setItem("tolovlar_migrated", "1");
+                        for (var i = 0; i < legacy.length; i++) { var l = legacy[i]; await col.add({ name: l.name, amount: l.amount, cur: l.cur || "UZS", ts: l.ts || Date.now() + i }); }
+                    }
+                } catch (e) { }
+            } catch (e) { setStatus("Faqat shu brauzerda saqlanyapti."); }
+        })();
+    </script>
+</body>
+
+</html>
